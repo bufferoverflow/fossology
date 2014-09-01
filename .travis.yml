@@ -14,9 +14,11 @@ install:
         libtext-template-perl librpm-dev  rpm libpcre3-dev libssl-dev
         apache2 libapache2-mod-php5 php5-pgsql php-pear php5-cli
         binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils
-        rpm upx-ucl unrar-free unzip p7zip-full p7zip wget git-core subversion
+        rpm upx-ucl unrar-free zip unzip p7zip-full p7zip wget git-core subversion
         postgresql libpq-dev
  - sudo apt-get install -qq cppcheck
+ - curl -sS https://getcomposer.org/installer | php
+ - sudo mv composer.phar /usr/local/bin/composer
 
 script:
  - make
