@@ -9,21 +9,25 @@ echo "Provisioning system to compile, test and develop."
 # fix "dpkg-reconfigure: unable to re-open stdin: No file or directory" issue
 sudo dpkg-reconfigure locales
 
-sudo apt-get update -qq -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq -y
 
 sudo apt-get install -qq debhelper libglib2.0-dev libmagic-dev libxml2-dev libtext-template-perl librpm-dev subversion rpm libpcre3-dev libssl-dev
 sudo apt-get install -qq php5-pgsql php-pear php5-cli
 sudo apt-get install -qq apache2 libapache2-mod-php5
-sudo apt-get install -qq binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils rpm upx-ucl unrar-free unzip p7zip-full p7zip
-sudo apt-get install -qq wget subversion git
+sudo apt-get install -qq binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils rpm upx-ucl unrar-free zip unzip p7zip-full p7zip
+sudo apt-get install -qq wget curl subversion git
 sudo apt-get install -qq libpq-dev postgresql
+
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
 
 date > /etc/vagrant.provisioned
 
 echo "lets go!"
 cd /vagrant
 
-make CFLAGS=-I/usr/include/glib-2.0
+make
 sudo make install
 sudo /usr/local/lib/fossology/fo-postinstall
 sudo /etc/init.d/fossology start
@@ -33,7 +37,16 @@ sudo cp /vagrant/install/src-install-apache-example.conf /etc/apache2/conf.d/fos
 sudo /etc/init.d/apache2 restart
 
 sudo addgroup vagrant fossy
-# TODO: do a FOSSology source code scan via command line
+
+# let's scan some spdx license lists
+SPDX_VERSIONS="1.19 1.18 1.17 1.16 1.15 1.14"
+for i in $SPDX_VERSIONS; do
+ wget -q https://github.com/siemens/spdx-licenselist/archive/v$i.zip -O /tmp/v$i.zip
+ # remove irrelevant files, how to tag them inside FOSSology?
+ zip --delete /tmp/v$i.zip "*.xls"
+ zip --delete /tmp/v$i.zip "*.ods"
+ cp2foss -v  --username fossy --password fossy -q all /tmp/v$i.zip
+done
 
 echo "use your FOSSology at http://localhost:8081/repo/"
 echo " user: fossy , password: fossy
