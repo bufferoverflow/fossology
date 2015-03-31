@@ -7,4 +7,4 @@
 /etc/init.d/fossology start
 
 sleep 3
-/usr/sbin/apache2ctl -X
+/usr/sbin/apache2ctl -D FOREGROUND

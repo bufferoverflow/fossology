@@ -1,6 +1,11 @@
 # Copyright Siemens AG, 2015
 # SPDX-License-Identifier:	GPL-2.0 LGPL-2.1
 
+# run FOSSology via Docker and listen on http://localhost:8080/repo/
+# sudo docker run -d -p 8080:80 bufferoverflow/fossology
+
+# TODO option to use an existing DB via environment variables
+
 FROM bufferoverflow/debian
 MAINTAINER Roger Meier <r.meier@siemens.com>
 
@@ -60,4 +65,3 @@ EXPOSE 80
 ADD install/docker.sh /usr/bin/docker.sh
 
 CMD ["/usr/bin/docker.sh"]
-
